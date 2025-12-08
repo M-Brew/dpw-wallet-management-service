@@ -1,6 +1,6 @@
 export interface IWalletUpdateEvent {
   type: "transaction_pending" | "transaction_completed" | "transaction_failed";
-  status: "PENDING" | "SUCCESS" | "FAILURE";
+  status: "PENDING" | "SUCCESS" | "FAILED" | "REVERSED";
   transactionId: string;
   transactionType: "P2P" | "P2M" | "Withdrawal" | "Deposit";
   senderUserId: string;

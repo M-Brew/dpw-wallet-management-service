@@ -10,12 +10,10 @@ const router = Router();
 
 router.post("/create", async (req: Request, res: Response) => {
   try {
-    const { userId, initialBalance, currency } = req.body;
+    const { userId } = req.body;
 
     const { valid, errors } = createWalletValidation({
       userId,
-      initialBalance,
-      currency,
     });
     if (!valid) {
       return res.status(400).json({ errors });
@@ -28,8 +26,6 @@ router.post("/create", async (req: Request, res: Response) => {
 
     const newWallet = new Wallet({
       user: userId,
-      ...(initialBalance ? { balance: initialBalance } : {}),
-      ...(currency ? { currency } : {}),
     });
     await newWallet.save();
 
@@ -62,7 +58,7 @@ router.post("/update", async (req: Request, res: Response) => {
     const { userId, walletId, amount, transactionType } = req.body;
 
     const { valid, errors } = updateWalletValidation({
-      userId,
+      // userId,
       walletId,
       amount,
       transactionType,

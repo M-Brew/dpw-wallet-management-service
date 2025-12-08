@@ -1,11 +1,7 @@
 import { isValidObjectId } from "mongoose";
 
-const createWalletValidation = (details: {
-  userId: string;
-  initialBalance?: number;
-  currency?: string;
-}) => {
-  const { userId, initialBalance, currency } = details;
+const createWalletValidation = (details: { userId: string }) => {
+  const { userId } = details;
   const errors: Record<string, string> = {};
 
   if (!userId || userId.trim() === "") {
@@ -14,14 +10,6 @@ const createWalletValidation = (details: {
     if (!isValidObjectId(userId)) {
       errors.userId = "User id should be a valid id";
     }
-  }
-
-  if (initialBalance && initialBalance < 0) {
-    errors.initialBalance = "Initial balance should be greater than 0";
-  }
-
-  if (currency && currency != "GHS") {
-    errors.currency = "Invalid currency";
   }
 
   return {
@@ -31,21 +19,21 @@ const createWalletValidation = (details: {
 };
 
 const updateWalletValidation = (details: {
-  userId: string;
+  // userId: string;
   walletId: string;
   amount: number;
   transactionType: string;
 }) => {
-  const { userId, walletId, amount, transactionType } = details;
+  const { walletId, amount, transactionType } = details;
   const errors: Record<string, string> = {};
 
-  if (!userId || userId.trim() === "") {
-    errors.userId = "User id is required";
-  } else {
-    if (!isValidObjectId(userId)) {
-      errors.userId = "User id should be a valid id";
-    }
-  }
+  // if (!userId || userId.trim() === "") {
+  //   errors.userId = "User id is required";
+  // } else {
+  //   if (!isValidObjectId(userId)) {
+  //     errors.userId = "User id should be a valid id";
+  //   }
+  // }
 
   if (!walletId || walletId.trim() === "") {
     errors.walletId = "Wallet id is required";

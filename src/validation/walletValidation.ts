@@ -65,4 +65,30 @@ const updateWalletValidation = (details: {
   };
 };
 
-export { createWalletValidation, updateWalletValidation };
+const updateWalletStatusValidation = (details: { walletId: string, status: string }) => {
+  const { walletId, status } = details;
+  const errors: Record<string, string> = {};
+
+  if (!walletId || walletId.trim() === "") {
+    errors.walletId = "Wallet id is required";
+  } else {
+    if (!isValidObjectId(walletId)) {
+      errors.walletId = "Wallet id should be a valid id";
+    }
+  }
+
+  if (!status || status.trim() === "") {
+    errors.status = "Status is required";
+  } else {
+    if (!["active", "deactivated", "suspended"].includes(status)) {
+      errors.status = "Status should be a valid one";
+    }
+  }
+
+  return {
+    valid: Object.keys(errors).length < 1,
+    errors,
+  };
+}
+
+export { createWalletValidation, updateWalletValidation, updateWalletStatusValidation };

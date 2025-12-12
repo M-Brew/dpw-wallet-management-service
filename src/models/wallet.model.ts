@@ -1,10 +1,23 @@
 import { Schema, model } from "mongoose";
 
+const STATUS = {
+  active: "active",
+  deactivated: "deactivated",
+  suspended: "suspended",
+};
+
 const walletSchema = new Schema(
   {
-    user: {
+    userId: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: true
+    },
+    userName: {
+      type: String,
+      required: true
+    },
+    userImage: {
+      type: String,
     },
     balance: {
       type: Number,
@@ -15,6 +28,11 @@ const walletSchema = new Schema(
       type: String,
       required: true,
       default: "GHS"
+    },
+    status: {
+      type: String,
+      required: true,
+      default: STATUS.active,
     },
   },
   {

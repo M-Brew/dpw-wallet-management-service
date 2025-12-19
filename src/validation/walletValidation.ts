@@ -91,4 +91,29 @@ const updateWalletStatusValidation = (details: { walletId: string, status: strin
   };
 }
 
-export { createWalletValidation, updateWalletValidation, updateWalletStatusValidation };
+const addContactValidation = (details: {
+  walletId: string;
+  contactCode: string;
+}) => {
+  const { walletId, contactCode } = details;
+  const errors: Record<string, string> = {};
+
+  if (!walletId || walletId.trim() === "") {
+    errors.walletId = "Wallet id is required";
+  } else {
+    if (!isValidObjectId(walletId)) {
+      errors.walletId = "Wallet id should be a valid id";
+    }
+  }
+
+  if (!contactCode || contactCode === "") {
+    errors.contactCode = "Contact code is required";
+  }
+
+  return {
+    valid: Object.keys(errors).length < 1,
+    errors,
+  };
+};
+
+export { createWalletValidation, updateWalletValidation, updateWalletStatusValidation, addContactValidation };

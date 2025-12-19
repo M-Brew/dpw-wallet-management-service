@@ -19,6 +19,10 @@ const walletSchema = new Schema(
     userImage: {
       type: String,
     },
+    code: {
+      type: String,
+      required: true,
+    },
     balance: {
       type: Number,
       required: true,
@@ -34,6 +38,14 @@ const walletSchema = new Schema(
       required: true,
       default: STATUS.active,
     },
+    contacts: [
+      {
+        walletId: String,
+        code: String,
+        userName: String,
+        userImage: String,
+      }
+    ]
   },
   {
     timestamps: {

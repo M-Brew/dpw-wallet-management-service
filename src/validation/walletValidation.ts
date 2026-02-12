@@ -92,11 +92,20 @@ const updateWalletStatusValidation = (details: { walletId: string, status: strin
 }
 
 const addContactValidation = (details: {
+  userId: string;
   walletId: string;
   contactCode: string;
 }) => {
-  const { walletId, contactCode } = details;
+  const { userId, walletId, contactCode } = details;
   const errors: Record<string, string> = {};
+
+  if (!userId || userId.trim() === "") {
+    errors.userId = "User id is required";
+  } else {
+    if (!isValidObjectId(userId)) {
+      errors.userId = "User id should be a valid id";
+    }
+  }
 
   if (!walletId || walletId.trim() === "") {
     errors.walletId = "Wallet id is required";

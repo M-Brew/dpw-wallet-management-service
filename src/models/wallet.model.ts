@@ -42,6 +42,7 @@ const walletSchema = new Schema(
       {
         walletId: String,
         code: String,
+        userId: String,
         userName: String,
         userImage: String,
       }

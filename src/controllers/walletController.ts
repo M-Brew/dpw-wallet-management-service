@@ -77,21 +77,31 @@ const getUserWallet = async (req: Request, res: Response) => {
 
 const getWalletByNameOrWalletCode = async (req: Request, res: Response) => {
   try {
-    const { nameOrWalletId } = req.params;
+    const { nameOrWalletCode } = req.params;
 
-    const regex = new RegExp(nameOrWalletId, 'i');
-    const wallet = await Wallet.find({
+    const regex = new RegExp(nameOrWalletCode, 'i');
+    const wallets = await Wallet.find({
       $or: [
         { userName: regex },
-        { walletId: regex }
+        { code: regex }
       ]
-    }).select(["userId", "userName", "userImage", "code", "status"]);
+    });
 
-    if (!wallet) {
+    const modified = wallets.map((wallet) => ({
+      _id: wallet._id,
+      walletId: wallet._id,
+      code: wallet.code,
+      userId: wallet.userId,
+      userName: wallet.userName,
+      userImage: wallet.userImage,
+      status: wallet.status
+    }))
+
+    if (!wallets) {
       return res.status(404).json({ error: "Wallet not found" });
     }
 
-    return res.status(200).json(wallet);
+    return res.status(200).json(modified);
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
@@ -174,7 +184,7 @@ const updateWalletStatus = async (req: Request, res: Response) => {
 
 async function generateWalletCode(length: number) {
   let unique = true;
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*-+=~";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let walletCode = "";
   const randomArray = new Uint8Array(length);
   crypto.getRandomValues(randomArray);
@@ -196,9 +206,10 @@ async function generateWalletCode(length: number) {
 
 const addContact = async (req: Request, res: Response) => {
   try {
-    const { walletId, contactCode } = req.body;
+    const { userId, walletId, contactCode } = req.body;
 
     const { valid, errors } = addContactValidation({
+      userId,
       walletId,
       contactCode
     });
@@ -216,11 +227,18 @@ const addContact = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "New contact wallet not found" });
     }
 
+    const existingContact = wallet.contacts.find((contact) => contact.code === contactCode);
+    if (existingContact) {
+      return res.status(400).json({ error: "Wallet is already a contact" });
+    }
+
     const newContact = {
       walletId: contactWallet._id,
       code: contactWallet.code,
+      userId: contactWallet.userId,
       userName: contactWallet.userName,
-      userImage: contactWallet.userImage
+      userImage: contactWallet.userImage,
+      status: contactWallet.status
     }
 
     const updatedWallet = await Wallet.findByIdAndUpdate(
@@ -240,17 +258,14 @@ const removeContact = async (req: Request, res: Response) => {
   try {
     const { walletId, contactCode } = req.body;
 
-    const { valid, errors } = addContactValidation({
-      walletId,
-      contactCode
-    });
-    if (!valid) {
-      return res.status(400).json({ errors });
-    }
-
     const wallet = await Wallet.findById(walletId);
     if (!wallet) {
       return res.status(404).json({ error: "Wallet not found" });
+    }
+
+    const existingContact = wallet.contacts.find((contact) => contact.code === contactCode);
+    if (!existingContact) {
+      return res.status(400).json({ error: "Wallet is not a contact" });
     }
 
     const updateContactList = wallet.contacts.filter((contact) => contact.code !== contactCode)

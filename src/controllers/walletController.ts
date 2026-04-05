@@ -79,7 +79,7 @@ const getWalletByNameOrWalletCode = async (req: Request, res: Response) => {
   try {
     const { nameOrWalletCode } = req.params;
 
-    const regex = new RegExp(nameOrWalletCode, 'i');
+    const regex = new RegExp(`^${nameOrWalletCode}`, 'i');
     const wallets = await Wallet.find({
       $or: [
         { userName: regex },
